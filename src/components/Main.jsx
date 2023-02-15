@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -6,9 +6,20 @@ import {
   CardContent,
   Typography,
   Card,
+  Stack,
 } from "@mui/material";
+import axios from "axios";
 
 export default function Main() {
+  const [surat, setSurat] = useState([]);
+  const getAPI = async () => {
+    const checkResponse = await axios("https://equran.id/api/v2/surat");
+    setSurat(checkResponse.data.data);
+  };
+  useEffect(() => {
+    getAPI();
+  }, []);
+
   return (
     <>
       <main>
@@ -39,41 +50,73 @@ export default function Main() {
             >
               Membaca Al-Quran dengan mudah dan kapan saja
             </Typography>
-            <Content />
           </Container>
+          <Content data={surat} />
         </Box>
       </main>
     </>
   );
 }
 
-const Content = () => {
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  <>
-    <Container sx={{ py: 8 }} maxWidth="md">
-      <Grid container spacing={4}>
-        {cards.map((card) => (
-          <Grid item key={card} xs={12} sm={6} md={4}>
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="h2">
-                  Heading
-                </Typography>
-                <Typography>
-                  This is a media card. You can use this section to describe the
-                  content.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
-  </>;
+const Content = ({ data }) => {
+  return (
+    <>
+      <Container sx={{ py: 8 }} maxWidth="lg">
+        <Grid container spacing={4}>
+          {data.map((data) => (
+            <Grid item key={data.nomor} xs={12} sm={6} md={4}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <hr />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="h2"
+                    fontSize={"30px"}
+                  >
+                    {data.nama}
+                  </Typography>
+                  <Typography fontSize={"15px"}>{data.namaLatin}</Typography>
+                  <Stack
+                    direction={"row"}
+                    paddingTop={"20px"}
+                    justifyContent={"center"}
+                  >
+                    <Typography
+                      fontSize={"12px"}
+                      fontWeight={400}
+                      bgcolor={"green"}
+                      color={"white"}
+                      p={"8px"}
+                      mr={"10px"}
+                      borderRadius={"20px"}
+                    >
+                      {data.arti}
+                    </Typography>
+                    <Typography
+                      fontSize={"12px"}
+                      fontWeight={400}
+                      bgcolor={"teal"}
+                      color={"white"}
+                      p={"8px"}
+                      borderRadius={"20px"}
+                      textAlign={"center"}
+                    >
+                      {data.tempatTurun}
+                    </Typography>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </>
+  );
 };
